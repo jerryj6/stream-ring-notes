@@ -1,0 +1,31 @@
+services:
+  instagram-notes:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    env_file:
+      - ${NOTES_ENV_FILE:-../.env}
+    environment:
+      HOST: 0.0.0.0
+      PORT: 4317
+      STREAM_HOST: 0.0.0.0
+      STREAM_PORT: 8779
+    ports:
+      - "127.0.0.1:4317:4317"
+      - "127.0.0.1:8779:8779"
+    volumes:
+      - notes-data:/app/data
+    init: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    restart: unless-stopped
+    stop_grace_period: 35s
+    shm_size: 256mb
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:4317/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+volumes:
+  notes-data:

@@ -1,0 +1,17 @@
+[Unit]
+Description=Instagram Notes automation and Stream receiver
+After=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=%h/instagram-notes
+EnvironmentFile=%h/instagram-notes/.env
+Environment=NODE_ENV=production
+ExecStart=/usr/bin/env node dist/index.js
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=35
+UMask=0077
+
+[Install]
+WantedBy=default.target
